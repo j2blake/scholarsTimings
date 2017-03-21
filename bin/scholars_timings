@@ -1,0 +1,20 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Run the JMeter tests, based on supplied settings. Summarize the output.
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'scholars_timings'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+ScholarsTimings::Main.new.run
