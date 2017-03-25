@@ -1,13 +1,14 @@
 module ScholarsTimings
-  # What did you ask for?
-  class UserInputError < StandardError
-  end
-
   class Settings
     attr_accessor :test_plan
     attr_accessor :base_directory
     attr_accessor :results_directory
+    attr_accessor :uri_file
+    attr_accessor :jmeter_output_file
     attr_accessor :variant
+    attr_accessor :sample_count
+    attr_accessor :summary_file
+    attr_accessor :bottom_line_file
 
     # ------------------------------------------------------------------------------------
     private
@@ -57,7 +58,9 @@ module ScholarsTimings
     def validate_args
       validate_base_directory()
       validate_test_plan()
+      validate_uri_file()
       validate_variant()
+      expand_values()
     end
 
     def validate_base_directory
@@ -74,6 +77,12 @@ module ScholarsTimings
       path = File.absolute_path(require_value(:test_plan), @base_directory)
       user_input_error("Test plan does not exist: '#{path}'.") unless File.exist?(path)
       @test_plan = path
+    end
+
+    def validate_uri_file
+      path = File.absolute_path(require_value(:uri_file), @base_directory)
+      user_input_error("URI File does not exist: '#{path}'.") unless File.exist?(path)
+      @uri_file = path
     end
 
     def validate_variant()
@@ -93,6 +102,12 @@ module ScholarsTimings
       value
     end
 
+    def expand_values
+      @jmeter_output_file = File.expand_path("output.csv", @results_directory)
+      @summary_file = File.expand_path("summary.txt", @results_directory)
+      @bottom_line_file = File.expand_path("bottom_line.txt", @base_directory)
+      @sample_count = File.readlines(@uri_file).length
+    end
 
     # ------------------------------------------------------------------------------------
     public
@@ -103,18 +118,13 @@ module ScholarsTimings
         'Usage is scholars_timings \\',
         'settings_file=<settingsFile, relative to current directory> \\',
         'base_directory=<baseDirectory, defaults to current directory> \\',
-        'test_plan="<name of the JMeter file>" \\',
-        'variant="<name of the request and the output directory: e.g., double_drill>" \\',
+        'uri_file=<relative to the base_directory> \\',
+        'test_plan=<name of the JMeter file> \\',
+        'variant=<name of the request and the output directory: e.g., double_drill> \\',
       ]
 
-      begin
-        prepare_arguments_array(:settings_file, :test_plan, :base_directory, :variant)
-      rescue UserInputError
-        puts
-        puts "ERROR: #{$!}"
-        puts
-        exit 1
-      end
+      prepare_arguments_array(:settings_file, :test_plan, :base_directory,
+          :variant, :uri_file)
     end
   end
 end

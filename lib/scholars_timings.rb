@@ -26,28 +26,70 @@ Process the output file(s) into a summary
 =end
 
 $: << File.dirname(File.expand_path(__FILE__))
+require 'csv'
+
 require 'settings'
+require 'analyzer'
+require 'stats'
+require 'summary_file'
+require 'bottom_line_file'
 
 module ScholarsTimings
+  # What did you ask for?
+  class UserInputError < StandardError
+  end
+
+  # HTTP errors in the samples
+  class SamplingError < StandardError
+  end
 
   class Main
-    def initialize
-      @settings = Settings.new
-      puts "Main.new"
-    end
-
-    def run
+    def run_jmeter
       Dir.mkdir(@settings.results_directory)
       args = []
       args << '-n'
       args << '-t' << @settings.test_plan
       args << '-j' << File.expand_path("jmeter.log", @settings.results_directory)
-      args << '-l' << File.expand_path("sample.jtl", @settings.results_directory)
+      args << '-l' << @settings.jmeter_output_file
       args << "-Jdir.base=#{@settings.base_directory}"
       args << "-Jdir.output=#{@settings.results_directory}"
       args << "-Jaction.name=#{@settings.variant}"
-      system("jmeter", *args)
-      puts "Main.run2"
+      args << "-Jfile.uris=#{@settings.uri_file}"
+      args << "-Jsample_variables=LABEL"
+      success = system("jmeter", *args)
+      raise "Jmeter failed" unless success
+      puts
+    end
+
+    def analyze_results
+      analyzer = Analyzer.new(@settings)
+      analyzer.analyze
+      @stats = analyzer.stats
+      SummaryFile.new(@settings).write(@stats)
+      BottomLineFile.new(@settings).write(@stats)
+    end
+
+    def initialize
+      begin
+        @settings = Settings.new
+      rescue UserInputError
+        puts
+        puts "ERROR: #{$!}"
+        puts
+        exit 1
+      end
+    end
+
+    def run
+      begin
+        run_jmeter()
+        analyze_results()
+      rescue SamplingError
+        puts
+        puts "ERROR: #{$!}"
+        puts
+        exit 1
+      end
     end
   end
 end
