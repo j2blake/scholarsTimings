@@ -1,0 +1,25 @@
+#! /usr/bin/env ruby
+
+=begin rdoc
+--------------------------------------------------------------------------------
+
+Read a TTL model from standard input into memory and write the counts for:
+# of subjects
+# of predicates
+# of type statements
+    -- broken down by type
+# of statements
+
+--------------------------------------------------------------------------------
+=end
+
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+require 'model_summary'
+
+#
+# ---------------------------------------------------------
+# MAIN ROUTINE
+# ---------------------------------------------------------
+#
+
+ModelSummary::Main.new.run
