@@ -1,0 +1,12 @@
+URI=http://scholars.cornell.edu/individual/org49841
+
+for VARIANT in $@
+do
+  curl -o $VARIANT.ttl http://localhost:8080/scholars/api/dataRequest/$VARIANT?organization=$URI
+  echo '--------------------------------'
+  echo "  $VARIANT"
+  echo '--------------------------------'
+  echo '' 
+  _st_model_summary $VARIANT.ttl
+  echo ''
+done

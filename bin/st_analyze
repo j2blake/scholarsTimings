@@ -1,0 +1,12 @@
+SUMMARY=model_summaries.txt
+
+VARIANTS="ora_baseline"
+VARIANTS="$VARIANTS ora_drill_L1 ora_drill_L2 ora_drill_L3 ora_drill_L4 ora_drill_L5 ora_drill_L6"
+VARIANTS="$VARIANTS ora_drill_L1L2"
+
+rm $SUMMARY; touch $SUMMARY
+
+for VARIANT in $VARIANTS
+do
+  st_analyze_one $VARIANT >> $SUMMARY
+done
