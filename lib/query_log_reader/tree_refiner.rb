@@ -36,10 +36,10 @@ module QueryLogReader
   end
 end
 
-#attr_accessor :children
-#attr_accessor :records
-#attr_accessor :total_count
-#attr_accessor :total_elapsed
+#  attr_accessor :children
+#  attr_accessor :records
+#  attr_accessor :total_count
+#  attr_accessor :total_elapsed
 
 #    attr_accessor :stamp
 #    attr_accessor :elapsed
@@ -54,14 +54,14 @@ end
 =begin
 Second passes -- refine the tree
 -- canonicalize queries at nodes
--- recursively determine counts and elapsed times
--- recursively determine percentage time
 -- trim nodes (remove all but edu.cornell.mannlib?)
--- trim nodes (recursively remove singleton leaves?)
 
--- recursively remove singleton leaves:
-  -- if a node has no children do nothing
-     else if one child, check for removal
-       if the child has no children of its own, add its queries to the parent and delete the child
-  -- else (multiple children) recurse.
+For all query strings on a given node
+Split on white space into tokens
+Find positions with mismatched tokens.
+If more than one quarter are mismatched, complain
+In the mismatched positions, assign variables -- perhaps the same variable in more than one place.
+
+If class_method does not begin with edu.cornell
+Collapse any 
 =end
