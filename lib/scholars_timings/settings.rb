@@ -5,6 +5,7 @@ module ScholarsTimings
     attr_accessor :results_directory
     attr_accessor :uri_file
     attr_accessor :jmeter_output_file
+    attr_accessor :platform
     attr_accessor :variant
     attr_accessor :sample_count
     attr_accessor :summary_file
@@ -59,6 +60,7 @@ module ScholarsTimings
       validate_base_directory()
       validate_test_plan()
       validate_uri_file()
+      validate_platform()
       validate_variant()
       expand_values()
     end
@@ -85,10 +87,15 @@ module ScholarsTimings
       @uri_file = path
     end
 
+    def validate_platform()
+      @platform = require_value(:platform)
+      user_input_error("Platform must be 'vivo' or 'scholars'") unless @platform == "vivo" or @platform == "scholars"
+    end
+
     def validate_variant()
       @variant = require_value(:variant)
       (1..50).each do |index|
-        path = File.expand_path("#{@variant}_#{index}", @base_directory)
+        path = File.expand_path("%s_%s_%d" % [@platform, @variant, index], @base_directory)
         next if File.exist?(path)
         @results_directory = path
         return
@@ -120,10 +127,11 @@ module ScholarsTimings
         'base_directory=<baseDirectory, defaults to current directory> \\',
         'uri_file=<relative to the base_directory> \\',
         'test_plan=<name of the JMeter file> \\',
-        'variant=<name of the request and the output directory: e.g., double_drill> \\',
+        'platform=<context path of the webapp, and part of the output directory: e.g., scholars> \\',
+        'variant=<name of the request and part of the output directory: e.g., double_drill> \\',
       ]
 
-      prepare_arguments_array(:settings_file, :test_plan, :base_directory,
+      prepare_arguments_array(:settings_file, :test_plan, :base_directory, :platform, 
           :variant, :uri_file)
     end
   end

@@ -28,11 +28,11 @@ Process the output file(s) into a summary
 $: << File.dirname(File.expand_path(__FILE__))
 require 'csv'
 
-require 'settings'
-require 'analyzer'
-require 'stats'
-require 'summary_file'
-require 'bottom_line_file'
+require 'scholars_timings/settings'
+require 'scholars_timings/analyzer'
+require 'scholars_timings/stats'
+require 'scholars_timings/summary_file'
+require 'scholars_timings/bottom_line_file'
 
 module ScholarsTimings
   # What did you ask for?
@@ -53,6 +53,7 @@ module ScholarsTimings
       args << '-l' << @settings.jmeter_output_file
       args << "-Jdir.base=#{@settings.base_directory}"
       args << "-Jdir.output=#{@settings.results_directory}"
+      args << "-Jcontext.path=#{@settings.platform}"
       args << "-Jaction.name=#{@settings.variant}"
       args << "-Jfile.uris=#{@settings.uri_file}"
       args << "-Jsample_variables=LABEL"
